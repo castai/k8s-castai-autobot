@@ -1,0 +1,21 @@
+{
+  "function": {
+    "function_name": "disable_workload_autoscaler",
+    "inputs": [
+      {
+        "name": "param1",
+        "value": "default_value1"
+      },
+      {
+        "name": "param2",
+        "value": "default_value2"
+      }
+    ],
+    "env_variables": [
+      {
+        "name": "DEBUG_MODE",
+        "value": "true"
+      }
+    ]
+  }
+}

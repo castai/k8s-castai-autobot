@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: api-helper-bot
+  namespace: castai-agent
+spec:
+  schedule: "0 17 * * 1-5"  # Example: Run at 5pm every week day
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 3
+  suspend: false
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 86400
+      backoffLimit: 0
+      template:
+        metadata:
+          annotations:
+            autoscaling.cast.ai/removal-disabled: "true"
+          creationTimestamp: null
+        spec:
+          dnsPolicy: ClusterFirst
+          priorityClassName: system-cluster-critical
+          restartPolicy: OnFailure
+          schedulerName: default-scheduler
+          securityContext:
+            fsGroup: 1003
+            runAsGroup: 1003
+            runAsNonRoot: true
+            runAsUser: 1003
+          containers:
+          - name: castai-api-bot-helper-container_bare_bones
+            image: dancastai/castai_api_bot_helper_bare_bones:0.0.1
+            env:
+            - name: CLUSTER_ID
+              valueFrom:
+                configMapKeyRef:
+                  key: CLUSTER_ID
+                  name: castai-cluster-controller
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: castai-hibernate # Piggybacking Hibernate Secret
+                  key: API_KEY
+            - name: ENV_VAR1
+              value: "World!"
